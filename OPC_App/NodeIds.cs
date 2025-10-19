@@ -10,10 +10,11 @@ public static class NodeIds
 
 
     public const string StatusBatchId = "ns=6;s=::Program:Cube.Status.Parameter[0].Value";
-    public const string StatusCurAmount = "ns=6;s=::Program:Cube.Status.Parameter[1].Value";
-    public const string Statuspara2 = "ns=6;s=::Program:Cube.Status.Parameter[2].Value"; // what is this <--
+    public const string StatusCurAmount = "ns=6;s=::Program:Cube.Status.Parameter[1].Value"; //amount to produce
+    public const string StatusHumidity = "ns=6;s=::Program:Cube.Status.Parameter[2].Value";
     public const string StatusTemp = "ns=6;s=::Program:Cube.Status.Parameter[3].Value";
-    public const string StatusMovement = "ns=6;s=::Program:Cube.Status.Parameter[4].Value";
+    public const string StatusMovement = "ns=6;s=::Program:Cube.Status.Parameter[4].Value"; // Vibration
+    public const string StatusMachSpeed = "ns=6;s=::Program:Cube.Status.MachSpeed";
 
 
     public const string AdminDefectiveCount = "ns=6;s=::Program:Cube.Admin.ProdDefectiveCount";
