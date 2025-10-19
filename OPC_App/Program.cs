@@ -17,10 +17,12 @@ public class Program
             //Connect to server
             prg.ConnectToServer();
 
-            int batchId = 29;
-            BeerType beerType = BeerType.Stout;
+            Thread.Sleep(500);
+            int batchId = 327;
+            BeerType beerType = BeerType.Pilsner;
             int amount = 50;
-
+            prg.ResetMachine();
+            Thread.Sleep(500);
             prg.WriteBatchToServer(new Batch(batchId, beerType, amount));
 
             while (true)
@@ -39,13 +41,19 @@ public class Program
         var movement = _accessPoint.ReadNode(NodeIds.StatusMovement);
 
         var ctrlcmd = _accessPoint.ReadNode(NodeIds.CntrlCmd);
-        var param2 = _accessPoint.ReadNode(NodeIds.Statuspara2);
+        var humidity = _accessPoint.ReadNode(NodeIds.StatusHumidity);
 
-        var value = _accessPoint.ReadNode(NodeIds.StatusBatchId);
+        var batchId = _accessPoint.ReadNode(NodeIds.StatusBatchId);
+
+        var machspeed = _accessPoint.ReadNode(NodeIds.StatusMachSpeed);
+
+        var toProducedAmount = _accessPoint.ReadNode(NodeIds.StatusCurAmount);
+        var producedAmount = _accessPoint.ReadNode(NodeIds.AdminProcessedCount);
+        //var producedAmount = _accessPoint.ReadNode(NodeIds.StatusCurAmount);
 
         //Print values to console window
-        //Console.WriteLine($"Temp: {temperature,-5} Movement: {movement,-5} param2: {param2,-5} CtrlCmd: {ctrlcmd,-5} Value: {value,-5}");
-        Console.WriteLine($"Temp: {temperature,-5} Movement: {movement,-5} param2: {param2,-5} CtrlCmd: {ctrlcmd,-5} Value: {value,-5}");
+        //Console.WriteLine($"Temp: {temperature,-5} Movement: {movement,-5} humidity: {humidity,-5} CtrlCmd: {ctrlcmd,-5} batch id: {batchId,-5}");
+        Console.WriteLine($"current amount: {producedAmount,-5} goal amount: {toProducedAmount,-5} speed: {machspeed,-5} batch id: {batchId,-5}");
     }
 
     public void ReadValuesFromServer()
@@ -66,13 +74,26 @@ public class Program
     public void WriteBatchToServer(Batch batch)
     {
         // Values are up casted to insure that the types algin with the expected data types
+
+        // when brew
         OpcWriteNode[] commands = {
             new OpcWriteNode(NodeIds.CmdId, (float) batch.Id),
             new OpcWriteNode(NodeIds.CmdType, (float) batch.Type),
             new OpcWriteNode(NodeIds.CmdAmount, (float) batch.Amount),
-            new OpcWriteNode(NodeIds.MachSpeed, (float) 250),
+            new OpcWriteNode(NodeIds.MachSpeed, (float) 222),
             new OpcWriteNode(NodeIds.CntrlCmd, 2),
             new OpcWriteNode(NodeIds.CmdChangeRequest, true )
+        };
+        if (_accessPoint == null) throw new Exception();
+
+        _accessPoint.WriteNodes(commands);
+    }
+
+    public void ResetMachine()
+    {
+        OpcWriteNode[] commands = {
+            new OpcWriteNode(NodeIds.CntrlCmd, 1),
+            new OpcWriteNode(NodeIds.CmdChangeRequest, true)
         };
         _accessPoint.WriteNodes(commands);
     }
