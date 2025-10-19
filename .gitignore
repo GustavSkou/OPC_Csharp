@@ -1,0 +1,51 @@
+# Visual Studio / .NET common ignores
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+out/
+PublishProfiles/
+artifacts/
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+
+# Rider / IDE
+.idea/
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+
+# Logs, databases, temp files
+*.log
+*.sqlite
+*.db
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Package managers / tools
+*.vsix
+
+# JetBrains Rider cache
+.idea/
+
+# Others
+*.cache
+*.pid
+*.seed
+*.pid.lock
