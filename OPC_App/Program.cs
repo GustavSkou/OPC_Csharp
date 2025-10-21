@@ -5,7 +5,7 @@ public class Program
 {
     OpcClient? _accessPoint;
     //string _serverURL = "opc.tcp://192.168.0.122:4840";  //Physical PLC
-    string _serverURL = "opc.tcp://127.0.0.1:4840";      //Simulated PLC
+    //string _serverURL = "opc.tcp://127.0.0.1:4840";      //Simulated PLC
 
     //Main for testing
     static void Main(string[] args)
@@ -18,12 +18,17 @@ public class Program
             prg.ConnectToServer();
 
             Thread.Sleep(500);
-            int batchId = 327;
-            BeerType beerType = BeerType.Pilsner;
-            int amount = 50;
+
+            int batchId = 1;
+            BeerType beerType = BeerType.AlcoholFree;
+            int amount = 200;
+            int machineSpeed = 150;
+
+            Thread.Sleep(1000);
+
             prg.ResetMachine();
-            Thread.Sleep(500);
-            prg.WriteBatchToServer(new Batch(batchId, beerType, amount));
+            Thread.Sleep(1000);
+            prg.WriteBatchToServer(new Batch(batchId, beerType, amount, machineSpeed));
 
             while (true)
             {
@@ -49,11 +54,12 @@ public class Program
 
         var toProducedAmount = _accessPoint.ReadNode(NodeIds.StatusCurAmount);
         var producedAmount = _accessPoint.ReadNode(NodeIds.AdminProcessedCount);
-        //var producedAmount = _accessPoint.ReadNode(NodeIds.StatusCurAmount);
+        var defectiveAmount = _accessPoint.ReadNode(NodeIds.AdminDefectiveCount);
 
         //Print values to console window
-        //Console.WriteLine($"Temp: {temperature,-5} Movement: {movement,-5} humidity: {humidity,-5} CtrlCmd: {ctrlcmd,-5} batch id: {batchId,-5}");
-        Console.WriteLine($"current amount: {producedAmount,-5} goal amount: {toProducedAmount,-5} speed: {machspeed,-5} batch id: {batchId,-5}");
+        Console.Clear();
+        Console.WriteLine($"Temp: {temperature,-10} Movement: {movement,-10} humidity: {humidity,-10} CtrlCmd: {ctrlcmd,-10} batch id: {batchId,-10}\ncurrent amount: {producedAmount,-10} goal amount: {toProducedAmount,-10} defective Amount: {defectiveAmount,-10} speed: {machspeed,-10}");
+        //Console.WriteLine($"current amount: {producedAmount,-5} goal amount: {toProducedAmount,-5} speed: {machspeed,-5} batch id: {batchId,-5}");
     }
 
     public void ReadValuesFromServer()
@@ -80,7 +86,7 @@ public class Program
             new OpcWriteNode(NodeIds.CmdId, (float) batch.Id),
             new OpcWriteNode(NodeIds.CmdType, (float) batch.Type),
             new OpcWriteNode(NodeIds.CmdAmount, (float) batch.Amount),
-            new OpcWriteNode(NodeIds.MachSpeed, (float) 222),
+            new OpcWriteNode(NodeIds.MachSpeed, (float) batch.Speed),
             new OpcWriteNode(NodeIds.CntrlCmd, 2),
             new OpcWriteNode(NodeIds.CmdChangeRequest, true )
         };
