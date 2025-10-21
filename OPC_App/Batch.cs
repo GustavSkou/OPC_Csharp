@@ -3,6 +3,7 @@ public class Batch
     private int _id;
     private BeerType _type;
     private int _amount;
+    private int _speed;
 
     public int Id
     {
@@ -22,10 +23,17 @@ public class Batch
         set { _amount = value; }
     }
 
-    public Batch(int id, BeerType type, int amount)
+    public int Speed
+    {
+        get { return _speed; }
+        set { _speed = value; }
+    }
+
+    public Batch(int id, BeerType type, int amount, int speed)
     {
         _id = id;
         _type = type;
         _amount = amount;
+        _speed = speed;
     }
 }
