@@ -1,11 +1,12 @@
 ﻿using Opc.UaFx;
 using Opc.UaFx.Client;
+using Org.BouncyCastle.Asn1.Misc;
 
 public class Program
 {
     OpcClient? _accessPoint;
     //string _serverURL = "opc.tcp://192.168.0.122:4840";  //Physical PLC
-    //string _serverURL = "opc.tcp://127.0.0.1:4840";      //Simulated PLC
+    string _serverURL = "opc.tcp://127.0.0.1:4840";      //Simulated PLC
 
     //Main for testing
     static void Main(string[] args)
@@ -14,28 +15,24 @@ public class Program
 
         using (prg._accessPoint = new OpcClient(prg._serverURL))
         {
-            //Connect to server
             prg.ConnectToServer();
-
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
+            prg.ResetMachine();
+            Thread.Sleep(1000);
 
             int batchId = 1;
             BeerType beerType = BeerType.AlcoholFree;
             int amount = 200;
             int machineSpeed = 150;
-
-            Thread.Sleep(1000);
-
-            prg.ResetMachine();
-            Thread.Sleep(1000);
             prg.WriteBatchToServer(new Batch(batchId, beerType, amount, machineSpeed));
 
-            while (true)
+            while (Console.ReadKey().Key != ConsoleKey.Escape)
             {
                 prg.ReadFromServer();
-                //prg.ReadTreagerWay();
-                Thread.Sleep(500); //Hang out for half a second (testing)
+                Thread.Sleep(500);
             }
+            prg.DisconnectFromServer();
+            Console.WriteLine("Goodbye");
         }
     }
 
@@ -59,7 +56,6 @@ public class Program
         //Print values to console window
         Console.Clear();
         Console.WriteLine($"Temp: {temperature,-10} Movement: {movement,-10} humidity: {humidity,-10} CtrlCmd: {ctrlcmd,-10} batch id: {batchId,-10}\ncurrent amount: {producedAmount,-10} goal amount: {toProducedAmount,-10} defective Amount: {defectiveAmount,-10} speed: {machspeed,-10}");
-        //Console.WriteLine($"current amount: {producedAmount,-5} goal amount: {toProducedAmount,-5} speed: {machspeed,-5} batch id: {batchId,-5}");
     }
 
     public void ReadValuesFromServer()
@@ -67,13 +63,22 @@ public class Program
         OpcReadNode[] commands = new OpcReadNode[] {
             new OpcReadNode(NodeIds.CmdId),
             new OpcReadNode(NodeIds.CmdType),
-            new OpcReadNode(NodeIds.CmdAmount)
+            new OpcReadNode(NodeIds.StatusMachSpeed),
+            new OpcReadNode(NodeIds.StatusCurAmount),
+            new OpcReadNode(NodeIds.AdminProcessedCount),
+            new OpcReadNode(NodeIds.AdminDefectiveCount),
+            new OpcReadNode(NodeIds.StatusTemp),
+            new OpcReadNode(NodeIds.StatusHumidity),
+            new OpcReadNode(NodeIds.StatusMovement),
         };
+        Console.Clear();
 
+        const int space = -11;
+        Console.WriteLine($"|{"Id",space}|{"Type",space}|{"Speed",space}|{"Goal amount",space}|{"Processed",space}|{"Defective",space}|{"Temperature",space}|{"Humidity",space}|{"Vibration",space}|");
         IEnumerable<OpcValue> job = _accessPoint.ReadNodes(commands);
         foreach (OpcValue o in job)
         {
-            Console.WriteLine((float)o.Value);
+            Console.Write($"|{(float)o.Value,space}|");
         }
     }
 
