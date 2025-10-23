@@ -1,6 +1,5 @@
 ﻿using Opc.UaFx;
 using Opc.UaFx.Client;
-using Org.BouncyCastle.Asn1.Misc;
 
 public class Program
 {
@@ -47,7 +46,7 @@ public class Program
 
         var batchId = _accessPoint.ReadNode(NodeIds.StatusBatchId);
 
-        var machspeed = _accessPoint.ReadNode(NodeIds.StatusMachSpeed);
+        var machspeed = _accessPoint.ReadNode(NodeIds.MachSpeed);
 
         var toProducedAmount = _accessPoint.ReadNode(NodeIds.StatusCurAmount);
         var producedAmount = _accessPoint.ReadNode(NodeIds.AdminProcessedCount);
@@ -63,7 +62,7 @@ public class Program
         OpcReadNode[] commands = new OpcReadNode[] {
             new OpcReadNode(NodeIds.CmdId),
             new OpcReadNode(NodeIds.CmdType),
-            new OpcReadNode(NodeIds.StatusMachSpeed),
+            new OpcReadNode(NodeIds.MachSpeed),
             new OpcReadNode(NodeIds.StatusCurAmount),
             new OpcReadNode(NodeIds.AdminProcessedCount),
             new OpcReadNode(NodeIds.AdminDefectiveCount),
